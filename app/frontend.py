@@ -38,7 +38,7 @@ def add_user_message(content):
 
 
 ##################################################################################################
-# UI Mgmt
+
 def clear_chat_history():
     st.session_state[MESSAGES_KEY] = []
 
@@ -50,10 +50,11 @@ def display_chat_messages():
 
 def setup_sidebar():
     st.sidebar.title(APP_TITLE)
+    
     if st.sidebar.button("new chat"):
         clear_chat_history()
 ##################################################################################################
-# Main 
+
 def main():
 
     initialize_session_state()
