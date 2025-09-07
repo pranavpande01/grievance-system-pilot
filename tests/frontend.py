@@ -9,7 +9,7 @@ APP_TITLE = "Portal Pilot"
 
 ##################################################################################################
 redis_client = redis.Redis(host="localhost", port=6379, decode_responses=True)
-REDIS_STREAM = "chat_stream" 
+REDIS_STREAM = "to_back" 
 
 def initialize_session_state():
     if MESSAGES_KEY not in st.session_state:
@@ -24,7 +24,17 @@ def add_user_message(content):
         'role': 'user',
         'content': content
     }
+    redis_client.xadd("to_back", message)  
     st.session_state[MESSAGES_KEY].append(message)
+    
+    msg = redis_client.xread({"from_back": "$"}, block=0, count=1)
+    
+    response_message = {
+        'role': 'assistant',
+        'content': msg[0][1][0][1]['content']
+    }
+    st.session_state[MESSAGES_KEY].append(response_message)
+
 
 def display_chat_messages():
     """Display all messages in the chat history"""
@@ -38,7 +48,6 @@ def setup_sidebar():
     
     if st.sidebar.button("new chat"):
         clear_chat_history()
-        #st.rerun()
 ##################################################################################################
 
 def main():
@@ -50,15 +59,11 @@ def main():
     user_input = st.chat_input("Type here...")
     if user_input:
         add_user_message(user_input)
-        redis_client.xadd(REDIS_STREAM, {"user_input": user_input})  # NEW
 
-        #print(respond(user_input,"1"))
-        #st.rerun()
 
     display_chat_messages()
 
 if __name__ == "__main__":
     
     if not subprocess.run(["docker","ps","--filter","publish=6379","--format","{{.ID}}"],stdout=subprocess.PIPE).stdout.strip(): os.system("docker run -d -p 6379:6379 --name langgraph-redis redis")
-    #subprocess.Popen(["python", "util.py"])
     main()

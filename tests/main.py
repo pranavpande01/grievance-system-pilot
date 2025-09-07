@@ -7,7 +7,7 @@ import sys
 frontend = subprocess.Popen(["streamlit", "run", "frontend.py"])
 
 # Start backend
-backend = subprocess.Popen(["python", "util.py"])
+backend = subprocess.Popen(["python", "backend.py"])
 
 def cleanup(sig, frame):
     print("Stopping processes...")
