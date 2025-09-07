@@ -1,12 +1,12 @@
 import redis
-r = redis.Redis()
 
-def send_user_message(thread_id, user_input):
-    r.publish(f"incoming:{thread_id}", user_input)
+r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
-def listen_for_response(thread_id):
-    pubsub = r.pubsub()
-    pubsub.subscribe(f"outgoing:{thread_id}")
-    for message in pubsub.listen():
-        if message['type'] == 'message':
-            return message['data'].decode()
+print("Backend is running... waiting for messages")
+
+while True:
+    messages = r.xread({"chat_stream": "$"}, block=0, count=1)
+    print(messages)
+    for stream, events in messages:
+        for msg_id, msg_data in events:
+            print("User said:", msg_data["user_input"])
