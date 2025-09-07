@@ -19,7 +19,7 @@ def initialize_session_state():
 def clear_chat_history():
     st.session_state[MESSAGES_KEY] = []
 
-def add_user_message(content):
+def add_user_message(content): # to simplify
     message = {
         'role': 'user',
         'content': content
@@ -37,13 +37,11 @@ def add_user_message(content):
 
 
 def display_chat_messages():
-    """Display all messages in the chat history"""
     for message in st.session_state[MESSAGES_KEY]:
         with st.chat_message(message['role']):
             st.write(message['content'])  
 
 def setup_sidebar():
-    """Setup the sidebar with controls"""
     st.sidebar.title(APP_TITLE)
     
     if st.sidebar.button("new chat"):
@@ -51,7 +49,6 @@ def setup_sidebar():
 ##################################################################################################
 
 def main():
-    """Main application logic"""
 
     initialize_session_state()
     setup_sidebar()
