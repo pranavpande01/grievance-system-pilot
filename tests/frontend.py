@@ -1,5 +1,5 @@
 import streamlit as st
-
+from backend import respond
 MESSAGES_KEY = 'messages'
 APP_TITLE = "Portal Pilot"
 
@@ -43,6 +43,7 @@ def main():
     user_input = st.chat_input("Type here...")
     if user_input:
         add_user_message(user_input)
+        print(respond(user_input,"1"))
         #st.rerun()
 
     display_chat_messages()

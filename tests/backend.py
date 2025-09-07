@@ -16,7 +16,7 @@ class ChatState(TypedDict):
 #define nodes
 def chat_node(state:ChatState):
     return {
-        'message': llm.invoke(state['messages'])
+        'messages': llm.invoke(state['messages'])
 
     }
 
@@ -25,5 +25,25 @@ checkpointer=InMemorySaver()
 
 #define graph
 graph=StateGraph(ChatState)
-chatbot=graph.compile(checkpointer=checkpointer)
 
+#define nodes
+graph.add_node("chat_node",chat_node)
+
+#define edges
+graph.add_edge(START,"chat_node")
+graph.add_edge("chat_node",END)
+
+chatbot=graph.compile(checkpointer=checkpointer)
+def respond(user_input,thread_id):
+    config = {
+    "configurable": {
+        "thread_id": str(thread_id)
+    }
+    }
+
+    return chatbot.invoke(
+        {'messages':[HumanMessage(content=user_input)]},
+        config=config
+    )['messages'][-1].content
+
+    
