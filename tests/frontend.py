@@ -1,4 +1,7 @@
 import streamlit as st
+import time
+import os
+import subprocess
 from backend import respond
 MESSAGES_KEY = 'messages'
 APP_TITLE = "Portal Pilot"
@@ -49,4 +52,6 @@ def main():
     display_chat_messages()
 
 if __name__ == "__main__":
+    
+    if not subprocess.run(["docker","ps","--filter","publish=6379","--format","{{.ID}}"],stdout=subprocess.PIPE).stdout.strip(): os.system("docker run -d -p 6379:6379 --name langgraph-redis redis")
     main()
