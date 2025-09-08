@@ -1,8 +1,9 @@
 # papa.py
 import subprocess
 import signal
-import sys
-
+import sys,os 
+# Cold Start redis
+os.system("docker start langgraph-redis")
 # Start frontend
 frontend = subprocess.Popen(["streamlit", "run", "frontend.py"])
 

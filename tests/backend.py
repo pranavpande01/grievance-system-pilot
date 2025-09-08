@@ -49,7 +49,7 @@ def respond(user_input):
             "thread_id": 1
         }
     }
-
+    print(chatbot.checkpointer)
     return chatbot.invoke(
         {'messages': [HumanMessage(content=user_input)]},
         config=config
@@ -57,6 +57,7 @@ def respond(user_input):
 
 while True:
     msg = r.xread({"to_back": "$"}, block=0, count=1)
+    
     message = {
         'role': 'assistant',
         'content': respond(msg[0][1][0][1]['content'])
