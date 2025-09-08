@@ -3,9 +3,9 @@ import time
 import os
 import subprocess
 from util2 import generate_thread_id
-#from backend import respond
 import redis
 MESSAGES_KEY = 'messages'
+THREAD_ID="thread_id"
 APP_TITLE = "Portal Pilot"
 
 ##################################################################################################
@@ -16,16 +16,16 @@ REDIS_STREAM = "to_back"
 ##################################################################################################
 # State Mgmt
 def initialize_session_state():
-    if MESSAGES_KEY not in st.session_state:
+    if MESSAGES_KEY and THREAD_ID not in st.session_state:
         st.session_state[MESSAGES_KEY] = []
-        thread_id=generate_thread_id()
+        st.session_state[THREAD_ID]=generate_thread_id()
 
 def add_user_message(content): 
     to_send = {
         'role': 'user',
-        'content': content
+        'content': content,
+        'thread_id':st.session_state[THREAD_ID]
     }    
-    
     # send message
     redis_client.xadd("to_back", to_send) 
     # update state
@@ -41,6 +41,7 @@ def add_user_message(content):
 
 def clear_chat_history():
     st.session_state[MESSAGES_KEY] = []
+    st.session_state[THREAD_ID]=generate_thread_id()
 
 
 def display_chat_messages():
@@ -50,7 +51,6 @@ def display_chat_messages():
 
 def setup_sidebar():
     st.sidebar.title(APP_TITLE)
-    
     if st.sidebar.button("new chat"):
         clear_chat_history()
 ##################################################################################################

@@ -1,3 +1,3 @@
 import uuid
 def generate_thread_id():
-    return uuid.uuid4()
+    return str(uuid.uuid4())
