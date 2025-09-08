@@ -6,7 +6,6 @@ from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from typing import TypedDict, Annotated, List
 from dotenv import load_dotenv
 import redis
-
 ##################################################################################################
 # REDIS SECTION
 r = redis.Redis(host="localhost", port=6379, decode_responses=True)
