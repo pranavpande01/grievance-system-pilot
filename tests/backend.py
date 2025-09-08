@@ -46,12 +46,18 @@ def respond(thread_id,content):
             "thread_id": str(thread_id)
         }
     }
-    print(chatbot.checkpointer)
     return chatbot.invoke(
         {'messages': [HumanMessage(content=content)]},
         config=config
     )['messages'][-1].content
 
+def load_convo(thread_id):
+    config = {
+        "configurable": {
+            "thread_id": str(thread_id)
+        }
+    }
+    return chatbot.get_state(config)['messages']
 while True:
     msg = r.xread({"to_back": "$"}, block=0, count=1)[0][1][0][1]
     

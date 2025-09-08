@@ -4,9 +4,11 @@ import os
 import subprocess
 from util2 import generate_thread_id
 import redis
+from backend import load_convo
 MESSAGES_KEY = 'messages'
 THREAD_ID="thread_id"
 APP_TITLE = "Portal Pilot"
+TEMP_VAR_THREADS="temp_var_threads"
 
 ##################################################################################################
 # Redis Section
@@ -16,9 +18,11 @@ REDIS_STREAM = "to_back"
 ##################################################################################################
 # State Mgmt
 def initialize_session_state():
-    if MESSAGES_KEY and THREAD_ID not in st.session_state:
+    if MESSAGES_KEY and THREAD_ID and TEMP_VAR_THREADS not in st.session_state:
         st.session_state[MESSAGES_KEY] = []
         st.session_state[THREAD_ID]=generate_thread_id()
+        st.session_state[TEMP_VAR_THREADS]=[st.session_state[THREAD_ID]]
+        
 
 def add_user_message(content): 
     to_send = {
@@ -36,12 +40,13 @@ def add_user_message(content):
     # update state
     st.session_state[MESSAGES_KEY].append(msg)
 
-
 ##################################################################################################
 
 def clear_chat_history():
     st.session_state[MESSAGES_KEY] = []
     st.session_state[THREAD_ID]=generate_thread_id()
+    st.session_state[TEMP_VAR_THREADS].append(st.session_state[THREAD_ID])
+
 
 
 def display_chat_messages():
@@ -53,6 +58,11 @@ def setup_sidebar():
     st.sidebar.title(APP_TITLE)
     if st.sidebar.button("new chat"):
         clear_chat_history()
+    for i in st.session_state[TEMP_VAR_THREADS]:
+        if st.sidebar.button(i):
+            st.session_state[THREAD_ID]=i
+            st.session_state[MESSAGES_KEY] = load_convo(i)
+
 ##################################################################################################
 
 def main():
